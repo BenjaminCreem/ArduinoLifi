@@ -1,11 +1,11 @@
 //Transmitter Code
 #define DELAY 6
-#define STARTSTOP 10
+
 int i=0;
 
 void setup() {
   int transPin = 13;
-  int baudrate = 9600;
+  int baudrate = 9600; //Must be same on both transmitter and receiver
   pinMode(transPin, OUTPUT);//light output port
   Serial.begin(baudrate);
   Serial.println("Transmission Pin: " + transPin);
@@ -29,9 +29,9 @@ void sendValue(int valToSend)
 {
   //Send start bit
   digitalWrite(13, HIGH);
-  delay(STARTSTOP);
+  delay(DELAY);
   digitalWrite(13, LOW);
-  delay(STARTSTOP);
+  delay(DELAY);
   int b;
   //Send actual value
   while(valToSend != 0)
@@ -51,28 +51,5 @@ void sendValue(int valToSend)
   }
   //Send stop bit
   digitalWrite(13, LOW);
-  delay(STARTSTOP*2);
-}
-
-//These are not surrounded by start and stop bits because they are
-//How the receiver will know that the transmitter is about to start
-void sendMain(int val)
-{
-  int b;
-  //Send Data
-  while(val != 0)
-  {
-      b = val%2;
-      val=val/2;
-      if(b==1)
-      {
-        digitalWrite(13, HIGH);
-        delay(DELAY);
-      }
-      else
-      {
-        digitalWrite(13, LOW);
-        delay(DELAY);
-      }
-  }
+  delay(DELAY*2);
 }

@@ -1,4 +1,4 @@
-int del= 2;
+int del= 10; //Needs to be same for both receiver and transmitter
 const int dsize = 16;
 
 
@@ -8,7 +8,7 @@ void setup() {
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
     //bool stopBitReceived = false;
-    int baudrate = 19200;
+    int baudrate = 9600; //Must be same on both receiver and transmitter
     Serial.begin(baudrate);
 
     //There are 4 basic states
@@ -24,30 +24,33 @@ void setup() {
     //Error - Complain. Wait for deus ex machina to go back
     //to state "wait"
 
-    //Wait state here
-    while(!startBitReceived)
+    while(true)
     {
-      sensorValue = analogRead(sensorPin);
-      if(sensorValue)
+      //Wait state here
+      while(!startBitReceived)
       {
-        startBitReceived = true;  
+        sensorValue = analogRead(sensorPin);
+        Serial.println(sensorValue);
+        if(sensorValue >= 300) //If we detected start bit
+        {
+          startBitReceived = true;  
+        }
       }
+
+      //Data state here
+      //Look at data stream to Record a Bit
+      for(int i = 0; i < dsize; i++)
+      { 
+        delay(del); 
+        d[i] = analogRead(sensorPin);     
+      }
+      Serial.println(convertToDecimal(d));
+      //Move to state stop when all bits received (16)
+    
+      //Stop state here
+
     }
-
-    //Data state here
-    //Wait for Timer
-
-    //Sample Data Line to Record a Bit
-    for(int i = 0; i < dsize; i++)
-    {
-      d[i] = analogRead(sensorPin);
-      //delay for x amount of time   
-    }
-    Serial.println(convertToDecimal(d));
-
-    //Move to state stop when all bits received (16)
-
-    //Stop state here
+   
         
 }
 
