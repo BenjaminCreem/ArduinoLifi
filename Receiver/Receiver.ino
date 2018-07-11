@@ -7,6 +7,7 @@ void setup() {
     int sensorValue; //Value read in by sensor
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
+    bool startBitFallOff = false;
     //bool stopBitReceived = false;
     int baudrate = 9600; //Must be same on both receiver and transmitter
     Serial.begin(baudrate);
@@ -27,13 +28,17 @@ void setup() {
     while(true)
     {
       //Wait state here
-      while(!startBitReceived)
+      while(!startBitReceived && !startBitFallOff)
       {
         sensorValue = analogRead(sensorPin);
-        Serial.println(sensorValue);
+        Serial.println(sensorValue); //For testing
         if(sensorValue >= 300) //If we detected start bit
         {
           startBitReceived = true;  
+        }
+        else if(startBitReceived) //Received start bit, but its fallen off now
+        {
+          startBitFallOff = true;
         }
       }
 
@@ -48,6 +53,11 @@ void setup() {
       //Move to state stop when all bits received (16)
     
       //Stop state here
+      analogRead(sensorPin);
+      delay(del); //Transmitter delays * 2, so receiver will have time
+      //to start looking for the start bit again
+      startBitReceived = false;
+      startBitFallOff = false;
 
     }
    
