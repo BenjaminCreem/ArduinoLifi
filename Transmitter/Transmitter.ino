@@ -5,19 +5,19 @@ int i=0;
 
 void setup() {
   int transPin = 13;
+  int baudrate = 9600;
   pinMode(transPin, OUTPUT);//light output port
-  Serial.begin(9600);
+  Serial.begin(baudrate);
   Serial.println("Transmission Pin: " + transPin);
  
   //Check sum of data
 
   //Send Data
-  int startInt = 32767;
-  int stopInt = -32768;
   int testVal = 1001;
-  sendMain(startInt);
-  sendValue(testVal);
-  sendMain(stopInt);
+  while(true)
+  {
+    sendValue(testVal);
+  }
 }
 
 void loop() {
@@ -29,6 +29,8 @@ void sendValue(int valToSend)
 {
   //Send start bit
   digitalWrite(13, HIGH);
+  delay(STARTSTOP);
+  digitalWrite(13, LOW);
   delay(STARTSTOP);
   int b;
   //Send actual value
@@ -49,7 +51,7 @@ void sendValue(int valToSend)
   }
   //Send stop bit
   digitalWrite(13, LOW);
-  delay(STARTSTOP);
+  delay(STARTSTOP*2);
 }
 
 //These are not surrounded by start and stop bits because they are
