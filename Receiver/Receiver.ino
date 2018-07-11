@@ -1,102 +1,54 @@
-//test test test
-int startInt = 32767;
-int stopInt = -32768;
 int del= 2;
 const int dsize = 16;
 
 
 void setup() {
-  int sensorPin = A0; //pin for ldr
-  int sensorValue = 0; //store value incoming from sensor
+    int sensorPin = A0; //pin for ldr
+    int sensorValue; //Value read in by sensor
+    int d[dsize]; //array to store incoming 16 bit values
+    bool startBitReceived = false;
+    //bool stopBitReceived = false;
+    int baudrate = 19200;
+    Serial.begin(baudrate);
 
-  int d[dsize]; //store incoming 16 bit values
-  int i;
-  int k;
-  int temp = 1;
-  int recvVal = 0;
-  bool isStartVal = false;
-  bool recvStopInt = false;
-  Serial.begin(9600);
-  Serial.println("Sensor Pin" + sensorPin);
+    //There are 4 basic states
+    //Wait - Sampling the data line. When we see a start bit
+    //start a timer at 1.5* bit-time and move to state "Data"
+    //Data - Wait for the timer then sample the data line to record
+    //a bit. Restart the timer to 1.0*bit time. Repeat as long as you
+    //haven't received all bits. Move to state "Stop" when all bits
+    //have been received
+    //Stop - Wait for the timer and sample the data line to check the
+    //stop bit. Move to state "Error" if it is wrong, add a byte to
+    //the receive buffer if it is not. Go back to state "Wait"
+    //Error - Complain. Wait for deus ex machina to go back
+    //to state "wait"
 
-  //Constantly look for the main start value to come through.
-  //That value is known by both arduinos to be 32767
-  //If we receive that value, then we look for the start bit. 
-  //The delay between the start bit and the bits in the value we want to read is 10
-  //The delay between each bit in the value is 6. 
-  while(true)
-  {
-    while(!isStartVal)
+    //Wait state here
+    while(!startBitReceived)
     {
-        delay(del); 
-        //Receive bit
-        sensorValue = analogRead(sensorPin);
-        //Move current bits up 1 index
-        //Set new bit to 0 index
-        d[0] = sensorValue;
-        //Test if new array corresponds to main start code
-        recvVal = convertToDecimal(d);
-        Serial.println("Received Start Val: " + recvVal);
-        if(recvVal == startInt)
-        {
-          isStartVal = true;
-        }
+      sensorValue = analogRead(sensorPin);
+      if(sensorValue)
+      {
+        startBitReceived = true;  
+      }
     }
 
-    //Primary start value has been received. Read start bit, value,
-    //and stop bit all while looking for the primary stop value
+    //Data state here
+    //Wait for Timer
 
-    while(!recvStopInt)
+    //Sample Data Line to Record a Bit
+    for(int i = 0; i < dsize; i++)
     {
-
-      //Read start bit
-      sensorValue = analogRead(sensorPin);
-      delay(del); 
-
-      //Read in actual value
-      for(i = 0; i < dsize; i++)
-      {
-          sensorValue = analogRead(sensorPin);
-          d[i] = sensorValue;
-          delay(del);
-      }
-    
-      //Convert to decimal
-      while(i >= 0)
-      {
-        if(d[i] >= 75)
-        {
-          k = i;
-          while(k != 0)
-          {
-            temp=temp*2;
-            k--; 
-          }
-          recvVal = recvVal + temp;
-          temp = 1;
-        }  
-        i--;
-      }
-
-      //If the value we read in is the final stop value, we stop receiving more values
-      if(recvVal == stopInt)
-      {
-          recvStopInt = true;
-      }
-      else //Otherwise we print the value 
-      {
-        Serial.println(recvVal);  
-      }
-
-      //Read stop bit
-      sensorValue = analogRead(sensorPin);
-      delay(del); 
-    
+      d[i] = analogRead(sensorPin);
+      //delay for x amount of time   
     }
-    
-    
-    
-  }
+    Serial.println(convertToDecimal(d));
+
+    //Move to state stop when all bits received (16)
+
+    //Stop state here
+        
 }
 
 void loop() {
