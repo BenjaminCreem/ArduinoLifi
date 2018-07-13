@@ -1,16 +1,17 @@
-int del= 10; //Needs to be same for both receiver and transmitter
+#include <elapsedMillis.h>
+
 const int dsize = 16;
 
+elapsedMillis timer0;
+#define INTERVAL 10
+#define MIDSTART INTERVAL/2
 
 void setup() {
     int sensorPin = A0; //pin for ldr
-    int sensorValue; //Value read in by sensor
+    int sensorValue = 0; //Value read in by sensor
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
-    bool startBitFallOff = false;
-    //bool stopBitReceived = false;
-    int baudrate = 9600; //Must be same on both receiver and transmitter
-    Serial.begin(baudrate);
+    Serial.begin(9600);
 
     //There are 4 basic states
     //Wait - Sampling the data line. When we see a start bit
@@ -25,41 +26,65 @@ void setup() {
     //Error - Complain. Wait for deus ex machina to go back
     //to state "wait"
 
-    while(true)
-    {
+    //while(true)
+    //{
       //Wait state here
-      while(!startBitReceived && !startBitFallOff)
+      while(!startBitReceived)
       {
         sensorValue = analogRead(sensorPin);
-        Serial.println(sensorValue); //For testing
-        if(sensorValue >= 300) //If we detected start bit
+        Serial.println(sensorValue);
+        if(sensorValue < 1008) //If we detected start bit
         {
-          startBitReceived = true;  
-        }
-        else if(startBitReceived) //Received start bit, but its fallen off now
-        {
-          startBitFallOff = true;
+          timer0 = 0;
+          startBitReceived = true;     
         }
       }
 
-      //Data state here
-      //Look at data stream to Record a Bit
-      for(int i = 0; i < dsize; i++)
-      { 
-        delay(del); 
-        d[i] = analogRead(sensorPin);     
+      //First bit is offset by 1 + half. Rest are offset by 1
+      while(timer0 <= INTERVAL + MIDSTART)
+      {
+        if(timer0 >= INTERVAL + MIDSTART)
+          {
+            d[0] = analogRead(sensorPin);
+            timer0 = 0;
+          }  
       }
+
+      //Data state here
+      //For each bit beside the first
+      for(int i = 1; i < dsize; i++)
+      { 
+        //Dont read until timer
+        while(timer0 <= INTERVAL)
+        {
+          //Is it time to read
+          if(timer0 >= INTERVAL)
+          {
+            d[i] = analogRead(sensorPin);
+          }    
+        }
+        timer0 = 0; //Set timer to 0 for each bit
+      }
+
+      
+      Serial.print("RECEIVED VALUE: ");
       Serial.println(convertToDecimal(d));
       //Move to state stop when all bits received (16)
     
       //Stop state here
       analogRead(sensorPin);
-      delay(del); //Transmitter delays * 2, so receiver will have time
       //to start looking for the start bit again
       startBitReceived = false;
-      startBitFallOff = false;
 
-    }
+      for(int i = 0; i < dsize; i++)
+      {
+        Serial.print("d at ");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(d[i]);  
+      }
+
+    //}
    
         
 }
@@ -77,7 +102,7 @@ int convertToDecimal(int arr[dsize])
   int rec = 0;
   while(j >= 0)
   {
-    if(arr[j] >= 75)
+    if(arr[j] <= 75)
     {
       n = j;
       while(n != 0)
@@ -92,3 +117,6 @@ int convertToDecimal(int arr[dsize])
   }
   return rec;
 }
+
+
+
