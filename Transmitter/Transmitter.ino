@@ -15,10 +15,7 @@ void setup() {
 
   //Send Data
   int testVal = 1001;
-  while(true)
-  {
-    sendValue(testVal);
-  }
+  sendValue(testVal);
 }
 
 void loop() {
