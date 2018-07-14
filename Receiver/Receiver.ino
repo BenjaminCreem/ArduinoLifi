@@ -2,15 +2,15 @@
 
 const int dsize = 16;
 
-elapsedMillis timer0;
-#define INTERVAL 10
-#define MIDSTART INTERVAL/2
+elapsedMicros timer0;
+const unsigned long INTERVAL  = 15000;
 
 void setup() {
     int sensorPin = A0; //pin for ldr
     int sensorValue = 0; //Value read in by sensor
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
+    int tempTimer = 0;
     Serial.begin(9600);
 
     //There are 4 basic states
@@ -40,39 +40,26 @@ void setup() {
         }
       }
 
-      //First bit is offset by 1 + half. Rest are offset by 1
-      while(timer0 <= INTERVAL + MIDSTART)
+      //Get bits based on timer0
+      for(unsigned long i = 1; i <= dsize; i++)
       {
-        if(timer0 >= INTERVAL + MIDSTART)
+        while(timer0 < i*INTERVAL)
+        {
+          if(timer0 - i*INTERVAL < 50)
           {
-            d[0] = analogRead(sensorPin);
-            timer0 = 0;
-          }  
+            d[i-1] = analogRead(sensorPin);  
+          }
+        }  
       }
 
-      //Data state here
-      //For each bit beside the first
-      for(int i = 1; i < dsize; i++)
-      { 
-        //Dont read until timer
-        while(timer0 <= INTERVAL)
-        {
-          //Is it time to read
-          if(timer0 >= INTERVAL)
-          {
-            d[i] = analogRead(sensorPin);
-          }    
-        }
-        timer0 = 0; //Set timer to 0 for each bit
-      }
 
       
       Serial.print("RECEIVED VALUE: ");
       Serial.println(convertToDecimal(d));
       //Move to state stop when all bits received (16)
     
-      //Stop state here
-      analogRead(sensorPin);
+      //Stop state here, dont need to read stop bits
+
       //to start looking for the start bit again
       startBitReceived = false;
 
@@ -85,7 +72,6 @@ void setup() {
       }
 
     //}
-   
         
 }
 
