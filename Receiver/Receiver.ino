@@ -1,6 +1,6 @@
 #include <elapsedMillis.h>
 
-const int dsize = 16;
+const int dsize = 8;
 
 elapsedMicros timer0;
 const unsigned long INTERVAL  = 15000;
@@ -10,7 +10,6 @@ void setup() {
     int sensorValue = 0; //Value read in by sensor
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
-    int tempTimer = 0;
     Serial.begin(9600);
 
     //There are 4 basic states

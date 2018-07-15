@@ -1,11 +1,11 @@
 //Transmitter Code
-#define DELAY 6
+#define DELAY 10
 
 int i=0;
 
 void setup() {
   int transPin = 13;
-  int baudrate = 9600; //Must be same on both transmitter and receiver
+  int baudrate = 9600; 
   pinMode(transPin, OUTPUT);//light output port
   Serial.begin(baudrate);
   Serial.print("Transmission Pin: ");
@@ -14,7 +14,7 @@ void setup() {
   //Check sum of data
 
   //Send Data
-  int testVal = 1001;
+  byte testVal = 123;
   sendValue(testVal);
 }
 
@@ -30,7 +30,7 @@ void sendValue(int valToSend)
   delay(DELAY);
   int b;
   //Send actual value
-  for(int i = 0; i < 16; i++)
+  for(int i = 0; i < 8; i++)
   {
       b = valToSend%2;
       valToSend=valToSend/2;
