@@ -1,23 +1,24 @@
 //Transmitter Code
-#define DELAY 6
-#define STARTSTOP 10
+#include <elapsedMillis.h>
+
+const unsigned long INTERVAL = 100000;
 int i=0;
+elapsedMicros timer0;
 
 void setup() {
   int transPin = 13;
+  int baudrate = 9600; 
   pinMode(transPin, OUTPUT);//light output port
-  Serial.begin(9600);
-  Serial.println("Transmission Pin: " + transPin);
+  Serial.begin(baudrate);
+  Serial.print("Transmission Pin: ");
+  Serial.println(transPin);
  
   //Check sum of data
+  delay(5000);
 
   //Send Data
-  int startInt = 32767;
-  int stopInt = -32768;
-  int testVal = 1001;
-  sendMain(startInt);
+  byte testVal = 24;
   sendValue(testVal);
-  sendMain(stopInt);
 }
 
 void loop() {
@@ -29,50 +30,34 @@ void sendValue(int valToSend)
 {
   //Send start bit
   digitalWrite(13, HIGH);
-  delay(STARTSTOP);
+  timer0 = 0;
   int b;
   //Send actual value
-  while(valToSend != 0)
+  for(int i = 0; i < 8; i++)
   {
       b = valToSend%2;
       valToSend=valToSend/2;
+      //Delay until time to send
+      while(timer0 < INTERVAL)
+      {
+      }
       if(b==1)
       {
         digitalWrite(13, HIGH);
-        delay(DELAY);
       }
       else
       {
         digitalWrite(13, LOW);
-        delay(DELAY);
       }
+      timer0 = 0;
   }
   //Send stop bit
   digitalWrite(13, LOW);
-  delay(STARTSTOP);
-}
-
-//These are not surrounded by start and stop bits because they are
-//How the receiver will know that the transmitter is about to start
-void sendMain(int val)
-{
-  int b;
-  //Send Data
-  while(val != 0)
+  timer0 = 0;
+  while(timer0 < INTERVAL)
   {
-      b = val%2;
-      val=val/2;
-      if(b==1)
-      {
-        digitalWrite(13, HIGH);
-        delay(DELAY);
-      }
-      else
-      {
-        digitalWrite(13, LOW);
-        delay(DELAY);
-      }
-  }
+  }//Delay on stop bit
+  
 }
 void sendFile (char input)
 {
