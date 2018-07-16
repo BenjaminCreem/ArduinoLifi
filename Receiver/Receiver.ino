@@ -1,15 +1,19 @@
 #include <elapsedMillis.h>
 
 const int dsize = 8;
-
 elapsedMicros timer0;
-const unsigned long INTERVAL  = 15000;
+const unsigned long INTERVAL  = 100000;
+const unsigned long HALF = INTERVAL/2;
+bool moveToNextBit = false;
 
 void setup() {
     int sensorPin = A0; //pin for ldr
     int sensorValue = 0; //Value read in by sensor
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
+
+    unsigned long intShift = 0;
+
     Serial.begin(9600);
 
     //There are 4 basic states
@@ -20,10 +24,7 @@ void setup() {
     //haven't received all bits. Move to state "Stop" when all bits
     //have been received
     //Stop - Wait for the timer and sample the data line to check the
-    //stop bit. Move to state "Error" if it is wrong, add a byte to
-    //the receive buffer if it is not. Go back to state "Wait"
-    //Error - Complain. Wait for deus ex machina to go back
-    //to state "wait"
+    //stop bit. 
 
     //while(true)
     //{
@@ -32,30 +33,39 @@ void setup() {
       {
         sensorValue = analogRead(sensorPin);
         Serial.println(sensorValue);
-        if(sensorValue < 1008) //If we detected start bit
+        if(sensorValue < 1015) //If we detected start bit
         {
           timer0 = 0;
           startBitReceived = true;     
         }
       }
 
+      //Just delay here until we get to the middle of the start bit
+      while(timer0 < HALF)
+      {       
+      }
+      timer0 = 0;
+
       //Get bits based on timer0
-      for(unsigned long i = 1; i <= dsize; i++)
+      for(unsigned long i = 0; i <= dsize; i++)
       {
-        while(timer0 < i*INTERVAL)
+        while(!moveToNextBit)
         {
-          if(timer0 - i*INTERVAL < 50)
+          if(INTERVAL - timer0 < 10)
           {
             d[i-1] = analogRead(sensorPin);  
+            timer0 = 0;
+            moveToNextBit = true;
           }
         }  
+        moveToNextBit = false;
       }
 
 
       
       Serial.print("RECEIVED VALUE: ");
       Serial.println(convertToDecimal(d));
-      //Move to state stop when all bits received (16)
+      //Move to state stop when full byte received
     
       //Stop state here, dont need to read stop bits
 
@@ -84,10 +94,10 @@ int convertToDecimal(int arr[dsize])
   int j = dsize;
   int n;
   int t = 1;
-  int rec = 0;
+  byte rec = 0;
   while(j >= 0)
   {
-    if(arr[j] <= 75)
+    if(arr[j] <= 1000)
     {
       n = j;
       while(n != 0)
