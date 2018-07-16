@@ -32,7 +32,6 @@ void setup() {
       while(!startBitReceived)
       {
         sensorValue = analogRead(sensorPin);
-        Serial.println(sensorValue);
         if(sensorValue < 1015) //If we detected start bit
         {
           timer0 = 0;
@@ -47,13 +46,13 @@ void setup() {
       timer0 = 0;
 
       //Get bits based on timer0
-      for(unsigned long i = 0; i <= dsize; i++)
+      for(unsigned long i = 0; i < dsize; i++)
       {
         while(!moveToNextBit)
         {
           if(INTERVAL - timer0 < 10)
           {
-            d[i-1] = analogRead(sensorPin);  
+            d[i] = analogRead(sensorPin);  
             timer0 = 0;
             moveToNextBit = true;
           }
