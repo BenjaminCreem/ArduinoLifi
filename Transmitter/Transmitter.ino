@@ -1,7 +1,9 @@
 //Transmitter Code
-#define DELAY 10
+#include <elapsedMillis.h>
 
+const unsigned long INTERVAL = 100000;
 int i=0;
+elapsedMicros timer0;
 
 void setup() {
   int transPin = 13;
@@ -12,9 +14,10 @@ void setup() {
   Serial.println(transPin);
  
   //Check sum of data
+  delay(5000);
 
   //Send Data
-  byte testVal = 123;
+  byte testVal = 24;
   sendValue(testVal);
 }
 
@@ -27,25 +30,31 @@ void sendValue(int valToSend)
 {
   //Send start bit
   digitalWrite(13, HIGH);
-  delay(DELAY);
+  timer0 = 0;
   int b;
   //Send actual value
   for(int i = 0; i < 8; i++)
   {
       b = valToSend%2;
       valToSend=valToSend/2;
+      //Delay until time to send
+      while(timer0 < INTERVAL)
+      {
+      }
       if(b==1)
       {
         digitalWrite(13, HIGH);
-        delay(DELAY);
       }
       else
       {
         digitalWrite(13, LOW);
-        delay(DELAY);
       }
+      timer0 = 0;
   }
   //Send stop bit
   digitalWrite(13, LOW);
-  delay(DELAY*2);
+  while(timer0 < INTERVAL)
+  {
+  }//Delay on stop bit
+  
 }
