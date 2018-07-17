@@ -13,12 +13,10 @@ void setup() {
   Serial.print("Transmission Pin: ");
   Serial.println(transPin);
  
-  //Check sum of data
+  //Check sum of data (not yet implemented);
   delay(5000);
-  byte sendVal = 24;
 
   //Send Data
-  //byte testVal = 0;
   for(int j = 0; j < 256; j++)
   {
     sendValue(j);
@@ -63,24 +61,3 @@ void sendValue(int valToSend)
   }//Delay on stop bit
   
 }
-void sendFile (char input)
-{
-   char holder = 0;
-   boolean loop1 = true; 
-   File file = FileSystem.Open(input, FILE_READ);
-   if(file==false)
-      error();
-   sendValue (int(file.size()));
-   while(loop1==true)
-   {
-      holder= file.Read();
-      if(holder!=-1)
-          sendValue(encode(holder));
-      else
-          loop1=false;
-   }
-    return; 
-}
-
-
-
