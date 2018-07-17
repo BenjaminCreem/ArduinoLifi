@@ -1,7 +1,7 @@
 //Transmitter Code
 #include <elapsedMillis.h>
 
-const unsigned long INTERVAL = 100000;
+const unsigned long INTERVAL = 50000;
 int i=0;
 elapsedMicros timer0;
 
@@ -15,10 +15,14 @@ void setup() {
  
   //Check sum of data
   delay(5000);
+  byte sendVal = 24;
 
   //Send Data
-  byte testVal = 24;
-  sendValue(testVal);
+  //byte testVal = 0;
+  for(int j = 0; j < 256; j++)
+  {
+    sendValue(j);
+  }
 }
 
 void loop() {
@@ -54,7 +58,7 @@ void sendValue(int valToSend)
   //Send stop bit
   digitalWrite(13, LOW);
   timer0 = 0;
-  while(timer0 < INTERVAL)
+  while(timer0 < INTERVAL*2)
   {
   }//Delay on stop bit
   
