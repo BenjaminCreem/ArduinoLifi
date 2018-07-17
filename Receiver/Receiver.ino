@@ -2,8 +2,9 @@
 
 const int dsize = 8;
 elapsedMicros timer0;
-const unsigned long INTERVAL  = 100000;
+const unsigned long INTERVAL  = 50000;
 const unsigned long HALF = INTERVAL/2;
+long threshold = 0; //To determine 0s and 1s
 bool moveToNextBit = false;
 
 void setup() {
@@ -12,7 +13,6 @@ void setup() {
     int d[dsize]; //array to store incoming 16 bit values
     bool startBitReceived = false;
 
-    unsigned long intShift = 0;
 
     Serial.begin(9600);
 
@@ -26,13 +26,24 @@ void setup() {
     //Stop - Wait for the timer and sample the data line to check the
     //stop bit. 
 
-    //while(true)
-    //{
+    //Calibrate 1 and 0 threshhold
+    const int precision = 1000;
+    for(int i = 0; i < precision; i++)
+    {
+      threshold += analogRead(sensorPin);
+    }
+    threshold = threshold / precision;
+    threshold = threshold - 15;
+    Serial.print("Threshold: ");
+    Serial.println(threshold);
+
+    while(true)
+    {
       //Wait state here
       while(!startBitReceived)
       {
-        sensorValue = analogRead(sensorPin);
-        if(sensorValue < 1015) //If we detected start bit
+        sensorValue = analogRead(sensorPin); //Takes 100 microseconds
+        if(sensorValue < threshold) //If we detected start bit
         {
           timer0 = 0;
           startBitReceived = true;     
@@ -71,15 +82,7 @@ void setup() {
       //to start looking for the start bit again
       startBitReceived = false;
 
-      for(int i = 0; i < dsize; i++)
-      {
-        Serial.print("d at ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.println(d[i]);  
-      }
-
-    //}
+    }
         
 }
 
@@ -96,7 +99,7 @@ int convertToDecimal(int arr[dsize])
   byte rec = 0;
   while(j >= 0)
   {
-    if(arr[j] <= 1000)
+    if(arr[j] <= threshold)
     {
       n = j;
       while(n != 0)
