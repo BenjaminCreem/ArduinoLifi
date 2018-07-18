@@ -1,7 +1,7 @@
 //Transmitter Code
 #include <elapsedMillis.h>
 
-const unsigned long INTERVAL = 40000;
+const unsigned long INTERVAL = 25000;
 int i=0;
 elapsedMicros timer0;
 
