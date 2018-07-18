@@ -58,7 +58,7 @@ void sendValue(byte valToSend)
   //Send stop bit
   digitalWrite(13, LOW);
   timer0 = 0;
-  while(timer0 < INTERVAL*2)
+  while(timer0 < INTERVAL)
   {
   }//Delay on stop bit
   
