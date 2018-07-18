@@ -20,7 +20,6 @@ void setup() {
   for(byte j = 0; j < 254; j++) //255 not 256 to prevent infinte loop
   {
     sendValue(j);
-    delay(2);
   }
 }
 
@@ -54,6 +53,8 @@ void sendValue(byte valToSend)
       }
       timer0 = 0;
   }
+  while(timer0< INTERVAL)
+  {}//Busy wait on last bit
   //Send stop bit
   digitalWrite(13, LOW);
   timer0 = 0;
