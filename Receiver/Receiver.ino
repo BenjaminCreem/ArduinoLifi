@@ -2,7 +2,7 @@
 
 const int dsize = 8;
 elapsedMicros timer0;
-const unsigned long INTERVAL  = 40000;
+const unsigned long INTERVAL  = 25000;
 const unsigned long HALF = INTERVAL/2;
 long threshold = 0; //To determine 0s and 1s
 bool moveToNextBit = false;
