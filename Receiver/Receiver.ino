@@ -74,7 +74,14 @@ void setup() {
 
       
       Serial.print("RECEIVED VALUE: ");
-      Serial.println(convertToDecimal(d));
+      byte recVal = convertToDecimal(d);
+      Serial.println(recVal);
+      //Busy wait on stop bit
+      timer0 = 0;
+      while(timer0 < INTERVAL)
+      {}
+        
+      
       //Move to state stop when full byte received
     
       //Stop state here, dont need to read stop bits
