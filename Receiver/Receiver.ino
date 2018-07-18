@@ -2,7 +2,7 @@
 
 const int dsize = 8;
 elapsedMicros timer0;
-const unsigned long INTERVAL  = 50000;
+const unsigned long INTERVAL  = 40000;
 const unsigned long HALF = INTERVAL/2;
 long threshold = 0; //To determine 0s and 1s
 bool moveToNextBit = false;
@@ -91,11 +91,24 @@ void loop() {
 
 }
 
-int convertToDecimal(int arr[dsize])
+byte convertToDecimalTest(int arr[dsize])
+{
+  byte recv = 0;
+  for(int i = 0; i < 8; i++)
+  {
+    if(arr[dsize] <= threshold)
+      recv |= true << i;
+    else
+      recv |= false << i;
+  }
+  return recv;
+}
+
+byte convertToDecimal(int arr[dsize])
 {
   int j = dsize;
-  int n;
-  int t = 1;
+  byte n;
+  byte t = 1;
   byte rec = 0;
   while(j >= 0)
   {
