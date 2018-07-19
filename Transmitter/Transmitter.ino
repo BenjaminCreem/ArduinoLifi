@@ -17,8 +17,12 @@ void setup() {
   delay(5000);
 
   //Send Data
-  byte testVal = 24;
-  sendValue(testVal);
+  //byte testVal = 24;
+ /*(for(byte i =0; i < 256; i++)
+ {
+  sendValue(i);
+ }*/
+  sendValue(140);
 }
 
 void loop() {
@@ -54,12 +58,12 @@ void sendValue(int valToSend)
   //Send stop bit
   digitalWrite(13, LOW);
   timer0 = 0;
-  while(timer0 < INTERVAL)
+  while(timer0 < INTERVAL*1.5)
   {
   }//Delay on stop bit
   
 }
-void sendFile (char input)
+/*void sendFile (char input)
 {
    char holder = 0;
    boolean loop1 = true; 
@@ -76,7 +80,13 @@ void sendFile (char input)
           loop1=false;
    }
     return; 
+}*/
+
+void error()
+{
+    Serial.print("File not found.");
 }
+ 
 
 
 
