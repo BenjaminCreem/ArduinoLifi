@@ -1,7 +1,7 @@
 //Transmitter Code
 #include <elapsedMillis.h>
 
-const unsigned long INTERVAL = 100000;
+const unsigned long INTERVAL = 25000;
 int i=0;
 elapsedMicros timer0;
 
@@ -13,16 +13,23 @@ void setup() {
   Serial.print("Transmission Pin: ");
   Serial.println(transPin);
  
-  //Check sum of data
-  delay(5000);
+  //Check sum of data (not yet implemented);
+  delay(10000);
 
   //Send Data
+<<<<<<< HEAD
   //byte testVal = 24;
  /*(for(byte i =0; i < 256; i++)
  {
   sendValue(i);
  }*/
   sendValue(140);
+=======
+  for(byte j = 0; j < 254; j++) //255 not 256 to prevent infinte loop
+  {
+    sendValue(j);
+  }
+>>>>>>> c17ddb83c581fc288471d97e205806a2ff2907e9
 }
 
 void loop() {
@@ -30,12 +37,12 @@ void loop() {
 
 }
 
-void sendValue(int valToSend)
+void sendValue(byte valToSend)
 {
   //Send start bit
   digitalWrite(13, HIGH);
   timer0 = 0;
-  int b;
+  byte b;
   //Send actual value
   for(int i = 0; i < 8; i++)
   {
@@ -55,6 +62,8 @@ void sendValue(int valToSend)
       }
       timer0 = 0;
   }
+  while(timer0< INTERVAL)
+  {}//Busy wait on last bit
   //Send stop bit
   digitalWrite(13, LOW);
   timer0 = 0;
@@ -63,6 +72,7 @@ void sendValue(int valToSend)
   }//Delay on stop bit
   
 }
+<<<<<<< HEAD
 /*void sendFile (char input)
 {
    char holder = 0;
@@ -90,3 +100,5 @@ void error()
 
 
 
+=======
+>>>>>>> c17ddb83c581fc288471d97e205806a2ff2907e9
