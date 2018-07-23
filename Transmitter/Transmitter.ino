@@ -1,7 +1,7 @@
 //Transmitter Code
 #include <elapsedMillis.h>
 
-const unsigned long INTERVAL = 25000;
+const unsigned long INTERVAL = 30000;
 int i=0;
 elapsedMicros timer0;
 
@@ -17,7 +17,7 @@ void setup() {
   delay(10000);
 
   //Send Data
-  for(byte j = 0; j < 254; j++) //255 not 256 to prevent infinte loop
+  for(int j = 0; j < 254; j++) //255 not 256 to prevent infinte loop
   {
     sendValue(j);
   }
