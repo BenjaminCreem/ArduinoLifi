@@ -30,18 +30,16 @@ void sendFile (char input[])
       sendValue(byte(input[i]));
 
    //send data
-   while(loop1==true)
+   while(file.available())
    {
-      holder= file.read();
-      if(holder!=-1)
-          sendValue(holder);
-      else
-          loop1=false;
+      sendValue(file.read());
+
    }
     return; 
 }
 
 void setup() {
+
   int transPin = 8;
   int baudrate = 9600; 
   pinMode(transPin, OUTPUT);//light output port
@@ -62,7 +60,8 @@ void setup() {
   {
     sendValue(j);
   }*/
-  char 
+  char fileName [9] = "TEST.txt";
+  sendFile(fileName);
 }
 void error(){}
 void loop() {

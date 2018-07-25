@@ -74,14 +74,14 @@ byte getValue()
 
 
       
-      Serial.print("RECEIVED VALUE: ");
+
       byte recVal = convertToDecimal(d);
       
-      Serial.println(recVal);
       //Busy wait on stop bit
       timer0 = 0;
       while(timer0 < INTERVAL)
       {}
+      return recVal;
 }
 
 void setup() {
