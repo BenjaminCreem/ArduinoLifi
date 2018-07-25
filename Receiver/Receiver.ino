@@ -136,14 +136,13 @@ byte convertToDecimal(int arr[dsize])
   return rec;
 }
 
-/*File file;
+File file;
 void writeFile(byte output[])
 {
   int len = sizeof(output);
-  SD.begin(4);
+  SD.begin(10);
   //initialize name array
-  char* filename;
-  char fileName = new char[int(output[len])];*
+
   char* filename;
   filename = (char*)malloc(sizeof(char)*int(output[len]));
   //get file name
@@ -161,5 +160,5 @@ void writeFile(byte output[])
      SD.write(output[i]);
   }
   free(filename);
-}*/
+}
 
