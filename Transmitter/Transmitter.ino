@@ -1,9 +1,45 @@
 //Transmitter Code
 #include <elapsedMillis.h>
+#include <SD.h>
 
 const unsigned long INTERVAL = 30000;
 int i=0;
 elapsedMicros timer0;
+
+File file;
+void sendFile (char input[])
+{
+    //initialize SD card
+   SD.begin(10);
+   //variables
+   byte holder = 0;
+   boolean loop1 = true;
+   //open file 
+   File file = SD.open(input, FILE_READ);
+   if(file==false)
+      error();
+   Serial.print("File Opened");
+   //send file size
+   sendValue (lowByte(file.size()));
+   sendValue (highByte(file.size()));
+      //send file name length
+   sendValue(byte(sizeof(input)));
+
+   //send file name
+   for(int i=0; i<sizeof(input);i++)
+      sendValue(byte(input[i]));
+
+   //send data
+   while(loop1==true)
+   {
+      holder= file.read();
+      if(holder!=-1)
+          sendValue(holder);
+      else
+          loop1=false;
+   }
+    return; 
+}
 
 void setup() {
   int transPin = 8;
@@ -22,12 +58,13 @@ void setup() {
   {
     sendValue(k[j]);
   }*/
-  for(byte j = 0; j<256; j++)
+ /* for(byte j = 0; j<256; j++)
   {
     sendValue(j);
-  }
+  }*/
+  char 
 }
-
+void error(){}
 void loop() {
   
 

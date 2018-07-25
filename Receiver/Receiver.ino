@@ -1,18 +1,91 @@
 #include <elapsedMillis.h>
 #include <SD.h>
-
+File file;
 const int dsize = 8;
 elapsedMicros timer0;
 const unsigned long INTERVAL  = 25000;
 const unsigned long HALF = INTERVAL/2;
 long threshold = 0; //To determine 0s and 1s
 bool moveToNextBit = false;
+const int precision = 1000;
+int sensorPin = A0; //pin for ldr
+int sensorValue = 0; //Value read in by sensor
+
+
+byte convertToDecimal(int arr[dsize])
+{
+  int j = dsize;
+  byte n;
+  byte t = 1;
+  byte rec = 0;
+  while(j >= 0)
+  {
+    if(arr[j] <= threshold)
+    {
+      n = j;
+      while(n != 0)
+      {
+        t=t*2;
+        n--; 
+      }
+      rec = rec + t;
+      t = 1;
+    }  
+    j--;
+  }
+  return rec;
+}
+
+byte getValue()
+{
+
+  int d[dsize]; //array to store incoming 16 bit values
+  bool startBitReceived = false;
+  while(!startBitReceived)
+      {
+        sensorValue = analogRead(sensorPin); //Takes 100 microseconds
+        if(sensorValue < threshold) //If we detected start bit
+        {
+          timer0 = 0;
+          startBitReceived = true;     
+        }
+      }
+
+      //Just delay here until we get to the middle of the start bit
+      while(timer0 < HALF)
+      {       
+      }
+      timer0 = 0;
+
+      //Get bits based on timer0
+      for(unsigned long i = 0; i < dsize; i++)
+      {
+        while(!moveToNextBit)
+        {
+          if(INTERVAL - timer0 < 10)
+          {
+            d[i] = analogRead(sensorPin);  
+            timer0 = 0;
+            moveToNextBit = true;
+          }
+        }  
+        moveToNextBit = false;
+      }
+
+
+      
+      Serial.print("RECEIVED VALUE: ");
+      byte recVal = convertToDecimal(d);
+      
+      Serial.println(recVal);
+      //Busy wait on stop bit
+      timer0 = 0;
+      while(timer0 < INTERVAL)
+      {}
+}
 
 void setup() {
-    int sensorPin = A0; //pin for ldr
-    int sensorValue = 0; //Value read in by sensor
-    int d[dsize]; //array to store incoming 16 bit values
-    bool startBitReceived = false;
+
 
 
     Serial.begin(9600);
@@ -28,7 +101,7 @@ void setup() {
     //stop bit. 
 
     //Calibrate 1 and 0 threshhold
-    const int precision = 1000;
+
     for(int i = 0; i < precision; i++)
     {
       threshold += analogRead(sensorPin);
@@ -38,7 +111,7 @@ void setup() {
     Serial.print("Threshold: ");
     Serial.println(threshold);
 
-    while(true)
+    /*while(true)
     {
       //Wait state here
       while(!startBitReceived)
@@ -76,23 +149,40 @@ void setup() {
       
       Serial.print("RECEIVED VALUE: ");
       byte recVal = convertToDecimal(d);
+      
       Serial.println(recVal);
       //Busy wait on stop bit
       timer0 = 0;
       while(timer0 < INTERVAL)
-      {}
-        
-      
+      {}*/
+      SD.begin(10);
+      byte sizeLowByte = getValue();
+      byte sizeHighByte = int(getValue());
+      int nameLength = int(getValue());
+      int fileSize = sizeLowByte | sizeHighByte << 8;
+      char * fileName;
+      fileName = (char*)malloc(sizeof(char)*nameLength);
+
+      for (int i=0;i<nameLength;i++)
+      {
+         fileName[i]=char(getValue());
+      }  
+      File file = SD.open(fileName, FILE_WRITE);
+      free(fileName);
+      for(int i=0;i<fileSize;i++)
+      {
+        file.write(getValue());
+      }  
+      free(fileName);
+      file.close();
       //Move to state stop when full byte received
     
       //Stop state here, dont need to read stop bits
 
       //to start looking for the start bit again
-      startBitReceived = false;
 
     }
         
-}
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -112,32 +202,9 @@ byte convertToDecimalTest(int arr[dsize])
   return recv;
 }
 
-byte convertToDecimal(int arr[dsize])
-{
-  int j = dsize;
-  byte n;
-  byte t = 1;
-  byte rec = 0;
-  while(j >= 0)
-  {
-    if(arr[j] <= threshold)
-    {
-      n = j;
-      while(n != 0)
-      {
-        t=t*2;
-        n--; 
-      }
-      rec = rec + t;
-      t = 1;
-    }  
-    j--;
-  }
-  return rec;
-}
 
-File file;
-void writeFile(byte output[])
+
+/*void writeFile(byte output[])
 {
   int len = sizeof(output);
   SD.begin(10);
@@ -160,5 +227,5 @@ void writeFile(byte output[])
      SD.write(output[i]);
   }
   free(filename);
-}
+}*/
 
