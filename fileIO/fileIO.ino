@@ -16,6 +16,7 @@ void sendFile (char input[])
    sendValue (lowByte(file.size()));
    sendValue (highByte(file.size()));
    //send file name
+   sendValue(byte(sizeof(input)));
    for(int i=0; i<sizeof(input);i++)
       sendValue(byte(input[i]));
    //send data
