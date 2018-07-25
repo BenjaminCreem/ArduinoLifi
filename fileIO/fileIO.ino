@@ -15,10 +15,12 @@ void sendFile (char input[])
    //send file size
    sendValue (lowByte(file.size()));
    sendValue (highByte(file.size()));
+
    //send file name
-   sendValue(byte(sizeof(input)));
    for(int i=0; i<sizeof(input);i++)
       sendValue(byte(input[i]));
+   //send file name length
+   sendValue(byte(sizeof(input)));
    //send data
    while(loop1==true)
    {
@@ -36,6 +38,7 @@ void error()
 
 
 }
+//to get rid of error messages till this is merged back to transmitter
 void sendValue(byte aa)
 {
 }

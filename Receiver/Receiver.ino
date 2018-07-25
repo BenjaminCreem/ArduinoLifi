@@ -1,4 +1,5 @@
 #include <elapsedMillis.h>
+#include <SD.h>
 
 const int dsize = 8;
 elapsedMicros timer0;
@@ -135,5 +136,30 @@ byte convertToDecimal(int arr[dsize])
   return rec;
 }
 
+/*File file;
+void writeFile(byte output[])
+{
+  int len = sizeof(output);
+  SD.begin(4);
+  //initialize name array
+  char* filename;
+  char fileName = new char[int(output[len])];*
+  char* filename;
+  filename = (char*)malloc(sizeof(char)*int(output[len]));
+  //get file name
+  int j=0;
+  for(int i = (len-1-int(output[len]));i<len-1;i++)
+  {
+      fileName[j]=char(output[len-int(output[len])+i]);
+      j++;
+  }
+  //create file
+  File file = SD.open(fileName, FILE_WRITE);
 
+  for(int i=2;i<(len-1-int(output[len]));i++)
+  {
+     SD.write(output[i]);
+  }
+  free(filename);
+}*/
 
