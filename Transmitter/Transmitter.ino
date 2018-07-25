@@ -17,7 +17,12 @@ void setup() {
   delay(10000);
 
   //Send Data
-  for(int j = 0; j < 254; j++) //255 not 256 to prevent infinte loop
+  /*byte k[6] = {65, 3, 250, 114, 76, 3};
+  for(int j = 0; j < 6; j++) //255 not 256 to prevent infinte loop
+  {
+    sendValue(k[j]);
+  }*/
+  for(byte j = 0; j<256; j++)
   {
     sendValue(j);
   }
