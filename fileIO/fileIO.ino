@@ -3,7 +3,7 @@ File file;
 void sendFile (char input[])
 {
     //initialize SD card
-   SD.begin(4);
+   SD.begin(10);
    //variables
    byte holder = 0;
    boolean loop1 = true;
@@ -15,12 +15,13 @@ void sendFile (char input[])
    //send file size
    sendValue (lowByte(file.size()));
    sendValue (highByte(file.size()));
+      //send file name length
+   sendValue(byte(sizeof(input)));
 
    //send file name
    for(int i=0; i<sizeof(input);i++)
       sendValue(byte(input[i]));
-   //send file name length
-   sendValue(byte(sizeof(input)));
+
    //send data
    while(loop1==true)
    {

@@ -101,6 +101,7 @@ void setup() {
     //stop bit. 
 
     //Calibrate 1 and 0 threshhold
+ 
 
     for(int i = 0; i < precision; i++)
     {
@@ -111,65 +112,21 @@ void setup() {
     Serial.print("Threshold: ");
     Serial.println(threshold);
 
-    /*while(true)
-    {
-      //Wait state here
-      while(!startBitReceived)
-      {
-        sensorValue = analogRead(sensorPin); //Takes 100 microseconds
-        if(sensorValue < threshold) //If we detected start bit
-        {
-          timer0 = 0;
-          startBitReceived = true;     
-        }
-      }
-
-      //Just delay here until we get to the middle of the start bit
-      while(timer0 < HALF)
-      {       
-      }
-      timer0 = 0;
-
-      //Get bits based on timer0
-      for(unsigned long i = 0; i < dsize; i++)
-      {
-        while(!moveToNextBit)
-        {
-          if(INTERVAL - timer0 < 10)
-          {
-            d[i] = analogRead(sensorPin);  
-            timer0 = 0;
-            moveToNextBit = true;
-          }
-        }  
-        moveToNextBit = false;
-      }
-
-
-      
-      Serial.print("RECEIVED VALUE: ");
-      byte recVal = convertToDecimal(d);
-      
-      Serial.println(recVal);
-      //Busy wait on stop bit
-      timer0 = 0;
-      while(timer0 < INTERVAL)
-      {}*/
       SD.begin(10);
       byte sizeLowByte = getValue();
-      byte sizeHighByte = int(getValue());
-      int nameLength = int(getValue());
-      int fileSize = sizeLowByte | sizeHighByte << 8;
+      //int nameLength = int(getValue());
+      //int fileSize = sizeLowByte | sizeHighByte << 8;
       char * fileName;
-      fileName = (char*)malloc(sizeof(char)*nameLength);
+      /*fileName = (char*)malloc(sizeof(char)*nameLength);
 
       for (int i=0;i<nameLength;i++)
       {
          fileName[i]=char(getValue());
-      }  
-      File file = SD.open(fileName, FILE_WRITE);
-      free(fileName);
-      for(int i=0;i<fileSize;i++)
+      }  */
+      //File file = SD.open("test2.txt", FILE_WRITE);
+      //free(fileName);
+      int fileSize = int(sizeLowByte);
+      for(int i=0;i<fileSize;i++);
       {
         file.write(getValue());
       }  
@@ -203,29 +160,4 @@ byte convertToDecimalTest(int arr[dsize])
 }
 
 
-
-/*void writeFile(byte output[])
-{
-  int len = sizeof(output);
-  SD.begin(10);
-  //initialize name array
-
-  char* filename;
-  filename = (char*)malloc(sizeof(char)*int(output[len]));
-  //get file name
-  int j=0;
-  for(int i = (len-1-int(output[len]));i<len-1;i++)
-  {
-      fileName[j]=char(output[len-int(output[len])+i]);
-      j++;
-  }
-  //create file
-  File file = SD.open(fileName, FILE_WRITE);
-
-  for(int i=2;i<(len-1-int(output[len]));i++)
-  {
-     SD.write(output[i]);
-  }
-  free(filename);
-}*/
 

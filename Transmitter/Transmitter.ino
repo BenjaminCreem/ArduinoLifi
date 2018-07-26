@@ -20,14 +20,17 @@ void sendFile (char input[])
       error();
    Serial.print("File Opened");
    //send file size
-   sendValue (lowByte(file.size()));
-   sendValue (highByte(file.size()));
+   sendValue (file.size());
       //send file name length
-   sendValue(byte(sizeof(input)));
+   /*sendValue(byte(sizeof(&input)));
 
    //send file name
-   for(int i=0; i<sizeof(input);i++)
+   Serial.print(sizeof(&input));
+   for(int i=0; i<sizeof(&input);i++)
+   {
+    Serial.print(input[i]);
       sendValue(byte(input[i]));
+   }*/
 
    //send data
    while(file.available())
@@ -51,17 +54,9 @@ void setup() {
   delay(10000);
 
   //Send Data
-  /*byte k[6] = {65, 3, 250, 114, 76, 3};
-  for(int j = 0; j < 6; j++) //255 not 256 to prevent infinte loop
-  {
-    sendValue(k[j]);
-  }*/
- /* for(byte j = 0; j<256; j++)
-  {
-    sendValue(j);
-  }*/
   char fileName [9] = "TEST.txt";
   sendFile(fileName);
+
 }
 void error(){}
 void loop() {
