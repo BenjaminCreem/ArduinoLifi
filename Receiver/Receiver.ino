@@ -18,8 +18,7 @@ File file;
 void setup() {
     Serial.begin(9600);
     initializeSD();
-    char fname[] = "test.txt";
-    createFile(fname);
+    //createFile(fname);
 
     //Calibrate 1 and 0 threshhold
 
@@ -42,14 +41,30 @@ void setup() {
     Serial.print("File Size: ");
     Serial.println(fileSize);
 
+    byte fileNameSize = getValue();
+    Serial.print("File Name Size: ");
+    Serial.println(fileNameSize);
+    if(fileNameSize == 255) //Would cause for loop to never end
+    {
+      exit(1);
+    }
+    Serial.print("File Name: ");
+    char fname[] = "";
+    for(byte i = 0; i < fileNameSize; i++)
+    {
+      fname[i] = getValue();
+      Serial.print(fname[i]);
+    }
+    fname[fileNameSize] = '\0'; //Add null terminator
+    //fname = "test.txt";
+    Serial.println();
+    createFile(fname);
+
     //Get file
     for(unsigned long i = 0; i < fileSize; i++)
     {
       file.write(getValue());
     }
-
-    
-
     
     Serial.println("Done!");
     file.close();
