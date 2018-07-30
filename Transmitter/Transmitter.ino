@@ -17,8 +17,12 @@ void setup() {
   Serial.begin(baudrate);
   Serial.print("Transmission Pin: ");
   Serial.println(transPin);
+<<<<<<< HEAD
   Serial.println("Enter the name of the file to transmit: \n")
   char fileName[] = serial.Read(); 
+=======
+ 
+>>>>>>> a358d19055a0f0a05b0b16ca3abd449729ea3598
   delay(10000);
   Serial.println("Sending file...");
 
@@ -27,6 +31,7 @@ void setup() {
   sendFile(fileName);
   Serial.println("File Sent!");
 }
+<<<<<<< HEAD
 
 
 int  sendFile (char input[])
@@ -49,6 +54,27 @@ int  sendFile (char input[])
    sendValue((byte)lengthName);
    for(i=0;i<lengthName;i++)
    sendValue(input[i]);
+=======
+
+
+int  sendFile (char input[])
+{
+   initializeSD();
+   openFile(input); 
+   //send file size
+   unsigned long fileSize = file.size();
+   byte buf[4];
+   buf[0] = (byte) fileSize & 0xFF;
+   buf[1] = (byte) (fileSize >> 8) & 0xFF;
+   buf[2] = (byte) (fileSize >> 16) & 0xFF;
+   buf[3] = (byte) (fileSize >> 24) & 0xFF;  
+   for(int i = 0; i < 4; i++)
+   {
+    Serial.println(buf[i]);
+    sendValue(buf[i]); 
+   }
+
+>>>>>>> a358d19055a0f0a05b0b16ca3abd449729ea3598
    //send data
    while(file.available())
    {
