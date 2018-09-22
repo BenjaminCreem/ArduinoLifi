@@ -17,8 +17,7 @@ void setup() {
   Serial.begin(baudrate);
   Serial.print("Transmission Pin: ");
   Serial.println(transPin);
-  Serial.println("Enter the name of the file to transmit: \n")
-  char fileName[] = serial.Read(); 
+  char fileName[] = "text.txt"; 
   delay(10000);
   Serial.println("Sending file...");
 
