@@ -2,6 +2,8 @@
 
 This is a project for our Wireless Applications class.
 
-This project will seek to send information over lifi between
-two arduino unos. The bulk of the project will be creating a
-software UART.
+This project allows for sending files using LiFi and two Arduinos
+
+Example Video:
+https://www.youtube.com/watch?v=HPLPHPC3PuU
+
